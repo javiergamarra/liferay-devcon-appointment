@@ -69,6 +69,22 @@ public abstract class BaseAppointmentResourceImpl
 		return new Appointment();
 	}
 
+	@Override
+	@GET
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
+	)
+	@Path("/appointments/{appointmentId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {})
+	public Appointment getAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
+				appointmentId)
+		throws Exception {
+
+		return new Appointment();
+	}
+
 	public void setContextCompany(Company contextCompany) {
 		this.contextCompany = contextCompany;
 	}

@@ -50,6 +50,19 @@ public class Query {
 			});
 	}
 
+	@GraphQLField
+	@GraphQLInvokeDetached
+	public Appointment getAppointment(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.getAppointment(
+				appointmentId));
+	}
+
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
 				ComponentServiceObjects<T> componentServiceObjects,
