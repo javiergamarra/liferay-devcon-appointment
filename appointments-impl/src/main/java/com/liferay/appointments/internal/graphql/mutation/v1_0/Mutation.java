@@ -44,6 +44,31 @@ public class Mutation {
 				siteId, appointment));
 	}
 
+	@GraphQLInvokeDetached
+	public void deleteAppointment(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		_applyVoidComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.deleteAppointment(
+				appointmentId));
+	}
+
+	@GraphQLInvokeDetached
+	public Appointment putAppointment(
+			@GraphQLName("appointmentId") Long appointmentId,
+			@GraphQLName("appointment") Appointment appointment)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.putAppointment(
+				appointmentId, appointment));
+	}
+
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
 				ComponentServiceObjects<T> componentServiceObjects,

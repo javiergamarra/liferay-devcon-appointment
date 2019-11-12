@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 
 import java.util.Collection;
@@ -23,8 +24,10 @@ import javax.annotation.Generated;
 import javax.validation.constraints.NotNull;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,6 +73,20 @@ public abstract class BaseAppointmentResourceImpl
 	}
 
 	@Override
+	@DELETE
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
+	)
+	@Path("/appointments/{appointmentId}")
+	@Produces("application/json")
+	@Tags(value = {@Tag(name = "Appointment")})
+	public void deleteAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
+				appointmentId)
+		throws Exception {
+	}
+
+	@Override
 	@GET
 	@Parameters(
 		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
@@ -80,6 +97,25 @@ public abstract class BaseAppointmentResourceImpl
 	public Appointment getAppointment(
 			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
 				appointmentId)
+		throws Exception {
+
+		return new Appointment();
+	}
+
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@Operation(description = "")
+	@PUT
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
+	)
+	@Path("/appointments/{appointmentId}")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {})
+	public Appointment putAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
+				appointmentId,
+			Appointment appointment)
 		throws Exception {
 
 		return new Appointment();
