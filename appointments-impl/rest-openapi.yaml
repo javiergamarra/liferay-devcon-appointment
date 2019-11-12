@@ -57,6 +57,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Appointment"
           description: "Get appointment"
+      tags: ["Appointment"]
     put:
       description: ""
       operationId: putAppointment
@@ -85,6 +86,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Appointment"
           description: ""
+      tags: ["Appointment"]
   "/sites/{siteId}/appointments":
     get:
       operationId: getSiteAppointmentsPage
@@ -129,6 +131,7 @@ paths:
                   $ref: "#/components/schemas/Appointment"
                 type: array
           description: "Get appointments"
+      tags: ["Appointment"]
     post:
       description: ""
       operationId: postSiteAppointment
@@ -157,3 +160,4 @@ paths:
               schema:
                 $ref: "#/components/schemas/Appointment"
           description: ""
+      tags: ["Appointment"]

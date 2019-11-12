@@ -48,47 +48,6 @@ public abstract class BaseAppointmentResourceImpl
 	implements AppointmentResource {
 
 	@Override
-	@GET
-	@Parameters(
-		value = {
-			@Parameter(in = ParameterIn.PATH, name = "siteId"),
-			@Parameter(in = ParameterIn.QUERY, name = "search"),
-			@Parameter(in = ParameterIn.QUERY, name = "filter"),
-			@Parameter(in = ParameterIn.QUERY, name = "page"),
-			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
-			@Parameter(in = ParameterIn.QUERY, name = "sort")
-		}
-	)
-	@Path("/sites/{siteId}/appointments")
-	@Produces({"application/json", "application/xml"})
-	@Tags(value = {})
-	public Page<Appointment> getSiteAppointmentsPage(
-			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
-			@Parameter(hidden = true) @QueryParam("search") String search,
-			@Context Filter filter, @Context Pagination pagination,
-			@Context Sort[] sorts)
-		throws Exception {
-
-		return Page.of(Collections.emptyList());
-	}
-
-	@Override
-	@Consumes({"application/json", "application/xml"})
-	@Operation(description = "")
-	@POST
-	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "siteId")})
-	@Path("/sites/{siteId}/appointments")
-	@Produces({"application/json", "application/xml"})
-	@Tags(value = {})
-	public Appointment postSiteAppointment(
-			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
-			Appointment appointment)
-		throws Exception {
-
-		return new Appointment();
-	}
-
-	@Override
 	@DELETE
 	@Parameters(
 		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
@@ -109,7 +68,7 @@ public abstract class BaseAppointmentResourceImpl
 	)
 	@Path("/appointments/{appointmentId}")
 	@Produces({"application/json", "application/xml"})
-	@Tags(value = {})
+	@Tags(value = {@Tag(name = "Appointment")})
 	public Appointment getAppointment(
 			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
 				appointmentId)
@@ -127,10 +86,51 @@ public abstract class BaseAppointmentResourceImpl
 	)
 	@Path("/appointments/{appointmentId}")
 	@Produces({"application/json", "application/xml"})
-	@Tags(value = {})
+	@Tags(value = {@Tag(name = "Appointment")})
 	public Appointment putAppointment(
 			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
 				appointmentId,
+			Appointment appointment)
+		throws Exception {
+
+		return new Appointment();
+	}
+
+	@Override
+	@GET
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.PATH, name = "siteId"),
+			@Parameter(in = ParameterIn.QUERY, name = "search"),
+			@Parameter(in = ParameterIn.QUERY, name = "filter"),
+			@Parameter(in = ParameterIn.QUERY, name = "page"),
+			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
+			@Parameter(in = ParameterIn.QUERY, name = "sort")
+		}
+	)
+	@Path("/sites/{siteId}/appointments")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Appointment")})
+	public Page<Appointment> getSiteAppointmentsPage(
+			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
+			@Parameter(hidden = true) @QueryParam("search") String search,
+			@Context Filter filter, @Context Pagination pagination,
+			@Context Sort[] sorts)
+		throws Exception {
+
+		return Page.of(Collections.emptyList());
+	}
+
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@Operation(description = "")
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "siteId")})
+	@Path("/sites/{siteId}/appointments")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Appointment")})
+	public Appointment postSiteAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
 			Appointment appointment)
 		throws Exception {
 

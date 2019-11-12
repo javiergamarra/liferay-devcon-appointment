@@ -30,20 +30,6 @@ public class Mutation {
 			appointmentResourceComponentServiceObjects;
 	}
 
-	@GraphQLField
-	@GraphQLInvokeDetached
-	public Appointment postSiteAppointment(
-			@GraphQLName("siteId") Long siteId,
-			@GraphQLName("appointment") Appointment appointment)
-		throws Exception {
-
-		return _applyComponentServiceObjects(
-			_appointmentResourceComponentServiceObjects,
-			this::_populateResourceContext,
-			appointmentResource -> appointmentResource.postSiteAppointment(
-				siteId, appointment));
-	}
-
 	@GraphQLInvokeDetached
 	public void deleteAppointment(
 			@GraphQLName("appointmentId") Long appointmentId)
@@ -67,6 +53,20 @@ public class Mutation {
 			this::_populateResourceContext,
 			appointmentResource -> appointmentResource.putAppointment(
 				appointmentId, appointment));
+	}
+
+	@GraphQLField
+	@GraphQLInvokeDetached
+	public Appointment postSiteAppointment(
+			@GraphQLName("siteId") Long siteId,
+			@GraphQLName("appointment") Appointment appointment)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.postSiteAppointment(
+				siteId, appointment));
 	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R

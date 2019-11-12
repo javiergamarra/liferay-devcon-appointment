@@ -38,6 +38,19 @@ public class Query {
 
 	@GraphQLField
 	@GraphQLInvokeDetached
+	public Appointment getAppointment(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.getAppointment(
+				appointmentId));
+	}
+
+	@GraphQLField
+	@GraphQLInvokeDetached
 	public Collection<Appointment> getSiteAppointmentsPage(
 			@GraphQLName("siteId") Long siteId,
 			@GraphQLName("search") String search,
@@ -57,19 +70,6 @@ public class Query {
 
 				return paginationPage.getItems();
 			});
-	}
-
-	@GraphQLField
-	@GraphQLInvokeDetached
-	public Appointment getAppointment(
-			@GraphQLName("appointmentId") Long appointmentId)
-		throws Exception {
-
-		return _applyComponentServiceObjects(
-			_appointmentResourceComponentServiceObjects,
-			this::_populateResourceContext,
-			appointmentResource -> appointmentResource.getAppointment(
-				appointmentId));
 	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
