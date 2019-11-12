@@ -18,9 +18,16 @@ info:
   version: v1.0
 openapi: 3.0.1
 paths:
-  "/appointments":
+  "/sites/{siteId}/appointments":
     get:
-      operationId: getAppointmentsPage
+      operationId: getSiteAppointmentsPage
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            format: int64
+            type: integer
       responses:
         200:
           content:
@@ -35,3 +42,31 @@ paths:
                   $ref: "#/components/schemas/Appointment"
                 type: array
           description: "Get appointments"
+    post:
+      description: ""
+      operationId: postSiteAppointment
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+          description: ""
