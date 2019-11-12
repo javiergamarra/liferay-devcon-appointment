@@ -1,0 +1,31 @@
+components:
+  schemas:
+    Appointment:
+      description: Represents an appointment.
+      properties:
+        title:
+          type: string
+        date:
+          format: date-time
+          type: string
+      type: object
+info:
+  description: ""
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  title: "Appointments"
+  version: v1.0
+openapi: 3.0.1
+paths:
+  "/appointments":
+    get:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Appointment"
+                type: array
+          description: "Get appointments"
