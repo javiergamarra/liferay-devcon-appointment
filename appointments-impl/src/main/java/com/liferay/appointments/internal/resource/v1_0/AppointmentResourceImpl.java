@@ -11,9 +11,12 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.Fields;
 import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
+import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
@@ -46,15 +49,14 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
 		throws Exception {
 
-		List<Appointment> appointments = new ArrayList<>(10);
+		List<JournalArticle> articles =
+			_journalArticleService.getArticles(
+				siteId, 0, contextAcceptLanguage.getPreferredLocale());
 
-		for (int i = 0; i < 10; i++) {
-			Appointment appointment = new Appointment();
+		List<Appointment> appointments = new ArrayList<>(articles.size());
 
-			appointment.setTitle("Title" + i);
-			appointment.setDate(new Date());
-
-			appointments.add(appointment);
+		for (JournalArticle article : articles) {
+			appointments.add(_toAppointment(article));
 		}
 
 		return Page.of(appointments);
