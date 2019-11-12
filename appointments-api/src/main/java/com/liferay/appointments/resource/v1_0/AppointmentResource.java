@@ -2,7 +2,10 @@ package com.liferay.appointments.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import javax.annotation.Generated;
 
@@ -17,7 +20,9 @@ import javax.annotation.Generated;
 @Generated("")
 public interface AppointmentResource {
 
-	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
+	public Page<Appointment> getSiteAppointmentsPage(
+			Long siteId, String search, Filter filter, Pagination pagination,
+			Sort[] sorts)
 		throws Exception;
 
 	public Appointment postSiteAppointment(Long siteId, Appointment appointment)

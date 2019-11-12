@@ -4,9 +4,12 @@ import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLInvokeDetached;
@@ -36,7 +39,11 @@ public class Query {
 	@GraphQLField
 	@GraphQLInvokeDetached
 	public Collection<Appointment> getSiteAppointmentsPage(
-			@GraphQLName("siteId") Long siteId)
+			@GraphQLName("siteId") Long siteId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") Filter filter,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page, @GraphQLName("sorts") Sort[] sorts)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
@@ -44,7 +51,9 @@ public class Query {
 			this::_populateResourceContext,
 			appointmentResource -> {
 				Page paginationPage =
-					appointmentResource.getSiteAppointmentsPage(siteId);
+					appointmentResource.getSiteAppointmentsPage(
+						siteId, search, filter, Pagination.of(pageSize, page),
+						sorts);
 
 				return paginationPage.getItems();
 			});
