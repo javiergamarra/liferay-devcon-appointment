@@ -75,6 +75,49 @@ paths:
                 $ref: "#/components/schemas/Appointment"
           description: ""
   "/appointments/{appointmentId}":
+    put:
+      description: ""
+      operationId: putAppointment
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+          description: ""
+    delete:
+      description:
+      operationId: deleteAppointment
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        204:
+          content:
+            application/json: {}
+      tags: ["Appointment"]
     get:
       operationId: getAppointment
       parameters:
