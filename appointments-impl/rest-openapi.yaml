@@ -20,10 +20,16 @@ openapi: 3.0.1
 paths:
   "/appointments":
     get:
+      operationId: getAppointmentsPage
       responses:
         200:
           content:
             application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Appointment"
+                type: array
+            application/xml:
               schema:
                 items:
                   $ref: "#/components/schemas/Appointment"
