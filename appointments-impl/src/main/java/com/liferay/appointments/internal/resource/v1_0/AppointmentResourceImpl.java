@@ -2,19 +2,11 @@ package com.liferay.appointments.internal.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.appointments.internal.odata.AppointmentEntityModel;
+import com.liferay.appointments.internal.util.AppointmentUtil;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
-import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
-import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.storage.Fields;
-import com.liferay.dynamic.data.mapping.util.DDM;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
-import com.liferay.journal.util.JournalConverter;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
@@ -22,29 +14,17 @@ import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
-import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
 import com.liferay.portal.vulcan.util.SearchUtil;
-
-import java.text.SimpleDateFormat;
-
-import java.time.LocalDateTime;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author Javier Gamarra
@@ -83,9 +63,7 @@ public class AppointmentResourceImpl
 			Sort[] sorts)
 		throws Exception {
 
-		DDMStructure ddmStructure = _ddmStructureService.getStructure(
-			siteId, _portal.getClassNameId(JournalArticle.class),
-			"BASIC-WEB-CONTENT", true);
+		DDMStructure ddmStructure = _appointmentUtil.getDDMStructure(siteId);
 
 		return SearchUtil.search(
 			booleanQuery -> {
@@ -126,8 +104,8 @@ public class AppointmentResourceImpl
 	public Appointment postSiteAppointment(Long siteId, Appointment appointment)
 		throws Exception {
 
-		JournalArticle journalArticle = _createJournalArticle(
-			siteId, appointment);
+		JournalArticle journalArticle = _appointmentUtil.createJournalArticle(
+			siteId, appointment.getTitle(), appointment.getDate());
 
 		return _toAppointment(journalArticle);
 	}
@@ -140,78 +118,12 @@ public class AppointmentResourceImpl
 		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
 			appointmentId);
 
-		String content = _getContent(
-			appointment, journalArticle.getDDMStructure());
+		String content = _appointmentUtil.getContent(
+			appointment.getDate(), journalArticle.getDDMStructure());
 
 		return _toAppointment(
-			_updateJournalArticle(
+			_appointmentUtil.updateJournalArticle(
 				appointment.getTitle(), content, journalArticle));
-	}
-
-	private JournalArticle _createJournalArticle(
-			long siteId, Appointment appointment)
-		throws Exception {
-
-		DDMStructure ddmStructure = _ddmStructureService.getStructure(
-			siteId, _portal.getClassNameId(JournalArticle.class),
-			"BASIC-WEB-CONTENT", true);
-
-		String content = _getContent(appointment, ddmStructure);
-
-		LocalDateTime localDateTime = LocalDateTimeUtil.toLocalDateTime(
-			new Date());
-
-		HashMap<Locale, String> titleMap = new HashMap<>();
-
-		titleMap.put(
-			contextAcceptLanguage.getPreferredLocale(), appointment.getTitle());
-
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setScopeGroupId(siteId);
-
-		return _journalArticleService.addArticle(
-			siteId, 0, 0, 0, null, true, titleMap, null, content,
-			ddmStructure.getStructureKey(), null, null,
-			localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
-			localDateTime.getYear(), localDateTime.getHour(),
-			localDateTime.getMinute(), 0, 0, 0, 0, 0, true, 0, 0, 0, 0, 0, true,
-			true, null, serviceContext);
-	}
-
-	private String _getContent(
-			Appointment appointment, DDMStructure ddmStructure)
-		throws Exception {
-
-		SimpleDateFormat simpleDateFormat = _getDateFormat();
-
-		DDMForm ddmForm = ddmStructure.getDDMForm();
-
-		LocalizedValue localizedValue = new LocalizedValue();
-
-		localizedValue.addString(
-			contextAcceptLanguage.getPreferredLocale(),
-			simpleDateFormat.format(appointment.getDate()));
-
-		DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
-
-		ddmFormFieldValue.setName("content");
-		ddmFormFieldValue.setValue(localizedValue);
-
-		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
-
-		ddmFormValues.setAvailableLocales(ddmForm.getAvailableLocales());
-		ddmFormValues.setDDMFormFieldValues(Arrays.asList(ddmFormFieldValue));
-		ddmFormValues.setDefaultLocale(ddmForm.getDefaultLocale());
-
-		Fields fields = _ddm.getFields(
-			ddmStructure.getStructureId(), ddmFormValues);
-
-		return _journalConverter.getContent(ddmStructure, fields);
-	}
-
-	private SimpleDateFormat _getDateFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	}
 
 	private Appointment _toAppointment(JournalArticle journalArticle)
@@ -219,8 +131,7 @@ public class AppointmentResourceImpl
 
 		Appointment appointment = new Appointment();
 
-		Fields fields = _journalConverter.getDDMFields(
-			journalArticle.getDDMStructure(), journalArticle.getContent());
+		appointment.setDate(_appointmentUtil.getDateField(journalArticle));
 
 		appointment.setId(journalArticle.getResourcePrimKey());
 
@@ -228,57 +139,13 @@ public class AppointmentResourceImpl
 			journalArticle.getTitle(
 				contextAcceptLanguage.getPreferredLocale()));
 
-		SimpleDateFormat simpleDateFormat = _getDateFormat();
-
-		appointment.setDate(
-			simpleDateFormat.parse(
-				(String)fields.get(
-					"content"
-				).getValue()));
-
 		return appointment;
 	}
 
-	private JournalArticle _updateJournalArticle(
-			String title, String content, JournalArticle journalArticle)
-		throws PortalException {
-
-		HashMap<Locale, String> titleMap = new HashMap<>();
-
-		LocalDateTime localDateTime = LocalDateTimeUtil.toLocalDateTime(
-			journalArticle.getDisplayDate());
-
-		titleMap.put(contextAcceptLanguage.getPreferredLocale(), title);
-
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setScopeGroupId(journalArticle.getGroupId());
-
-		return _journalArticleService.updateArticle(
-			journalArticle.getGroupId(), journalArticle.getFolderId(),
-			journalArticle.getArticleId(), journalArticle.getVersion(),
-			titleMap, null, journalArticle.getFriendlyURLMap(), content,
-			journalArticle.getDDMStructureKey(), null,
-			journalArticle.getLayoutUuid(), localDateTime.getMonthValue() - 1,
-			localDateTime.getDayOfMonth(), localDateTime.getYear(),
-			localDateTime.getHour(), localDateTime.getMinute(), 0, 0, 0, 0, 0,
-			true, 0, 0, 0, 0, 0, true, true, false, null, null, null, null,
-			serviceContext);
-	}
-
 	@Reference
-	private DDM _ddm;
-
-	@Reference
-	private DDMStructureService _ddmStructureService;
+	private AppointmentUtil _appointmentUtil;
 
 	@Reference
 	private JournalArticleService _journalArticleService;
-
-	@Reference
-	private JournalConverter _journalConverter;
-
-	@Reference
-	private Portal _portal;
 
 }
