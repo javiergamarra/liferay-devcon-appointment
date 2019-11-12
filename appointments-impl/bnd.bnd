@@ -1,0 +1,8 @@
+Bundle-Name: appointments-impl
+Bundle-SymbolicName: appointments-impl
+Bundle-Version: 1.0.0
+Import-Package:\
+    com.liferay.portal.kernel.model;version="[3.0.0,8.0.0)",\
+    com.liferay.portal.kernel.service;version="[3.0.0,8.0.0)",\
+    \
+    *

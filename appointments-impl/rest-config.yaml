@@ -1,0 +1,7 @@
+apiDir: "../appointments-api/src/main/java"
+apiPackagePath: "com.liferay.appointments"
+application:
+    baseURI: "/appointments"
+    className: "AppointmentsApplication"
+    name: "Liferay.Appointments"
+author: "Javier Gamarra"
