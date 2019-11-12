@@ -6,6 +6,7 @@ dependencies {
 	compileOnly group: "com.liferay", name: "com.liferay.journal.api", version: "4.2.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.function", version: "3.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string", version: "3.0.0"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.odata.api", version: "2.0.1"
 	compileOnly group: "com.liferay", name: "com.liferay.portal.vulcan.api", version: "3.2.1"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "4.13.0"
 	compileOnly group: "io.swagger.core.v3", name: "swagger-annotations", version: "2.0.5"

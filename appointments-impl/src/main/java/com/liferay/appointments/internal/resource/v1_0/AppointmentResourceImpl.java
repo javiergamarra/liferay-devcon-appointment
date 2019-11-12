@@ -1,6 +1,7 @@
 package com.liferay.appointments.internal.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.internal.odata.AppointmentEntityModel;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
@@ -14,21 +15,32 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.BooleanClauseOccur;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.BooleanFilter;
+import com.liferay.portal.kernel.search.filter.Filter;
+import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
+import com.liferay.portal.vulcan.util.SearchUtil;
 
 import java.text.SimpleDateFormat;
 
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -41,7 +53,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 	properties = "OSGI-INF/liferay/rest/v1_0/appointment.properties",
 	scope = ServiceScope.PROTOTYPE, service = AppointmentResource.class
 )
-public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
+public class AppointmentResourceImpl
+	extends BaseAppointmentResourceImpl implements EntityModelResource {
 
 	@Override
 	public void deleteAppointment(Long appointmentId) throws Exception {
@@ -60,19 +73,53 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 	}
 
 	@Override
-	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap) {
+		return new AppointmentEntityModel();
+	}
+
+	@Override
+	public Page<Appointment> getSiteAppointmentsPage(
+			Long siteId, String search, Filter filter, Pagination pagination,
+			Sort[] sorts)
 		throws Exception {
 
-		List<JournalArticle> articles = _journalArticleService.getArticles(
-			siteId, 0, contextAcceptLanguage.getPreferredLocale());
+		DDMStructure ddmStructure = _ddmStructureService.getStructure(
+			siteId, _portal.getClassNameId(JournalArticle.class),
+			"BASIC-WEB-CONTENT", true);
 
-		List<Appointment> appointments = new ArrayList<>(articles.size());
+		return SearchUtil.search(
+			booleanQuery -> {
+				BooleanFilter booleanFilter =
+					booleanQuery.getPreBooleanFilter();
 
-		for (JournalArticle article : articles) {
-			appointments.add(_toAppointment(article));
-		}
-
-		return Page.of(appointments);
+				booleanFilter.add(
+					new TermFilter(
+						com.liferay.portal.kernel.search.Field.CLASS_TYPE_ID,
+						String.valueOf(ddmStructure.getStructureId())),
+					BooleanClauseOccur.MUST);
+			},
+			filter, JournalArticle.class, search, pagination,
+			queryConfig -> queryConfig.setSelectedFieldNames(
+				com.liferay.portal.kernel.search.Field.ARTICLE_ID,
+				com.liferay.portal.kernel.search.Field.SCOPE_GROUP_ID),
+			searchContext -> {
+				searchContext.setAttribute(
+					com.liferay.portal.kernel.search.Field.STATUS,
+					WorkflowConstants.STATUS_APPROVED);
+				searchContext.setAttribute("head", Boolean.TRUE);
+				searchContext.setCompanyId(contextCompany.getCompanyId());
+				searchContext.setGroupIds(new long[] {siteId});
+			},
+			document -> _toAppointment(
+				_journalArticleService.getLatestArticle(
+					GetterUtil.getLong(
+						document.get(
+							com.liferay.portal.kernel.search.Field.
+								SCOPE_GROUP_ID)),
+					document.get(
+						com.liferay.portal.kernel.search.Field.ARTICLE_ID),
+					WorkflowConstants.STATUS_APPROVED)),
+			sorts);
 	}
 
 	@Override
