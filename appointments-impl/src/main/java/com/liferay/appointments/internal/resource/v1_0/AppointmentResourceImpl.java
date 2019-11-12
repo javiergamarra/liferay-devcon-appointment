@@ -18,18 +18,21 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ServiceScope;
 
 import java.text.SimpleDateFormat;
+
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Javier Gamarra
@@ -39,43 +42,6 @@ import java.util.Locale;
 	scope = ServiceScope.PROTOTYPE, service = AppointmentResource.class
 )
 public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
-
-	@Override
-	public Appointment getAppointment(Long appointmentId) throws Exception {
-		return _toAppointment(_journalArticleService.getLatestArticle(appointmentId));
-	}
-
-	@Override
-	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
-		throws Exception {
-
-		List<JournalArticle> articles =
-			_journalArticleService.getArticles(
-				siteId, 0, contextAcceptLanguage.getPreferredLocale());
-
-		List<Appointment> appointments = new ArrayList<>(articles.size());
-
-		for (JournalArticle article : articles) {
-			appointments.add(_toAppointment(article));
-		}
-
-		return Page.of(appointments);
-	}
-
-	@Override
-	public Appointment putAppointment(
-		Long appointmentId, Appointment appointment) throws Exception {
-
-		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
-			appointmentId);
-
-		String content = getContent(
-			appointment, journalArticle.getDDMStructure());
-
-		return _toAppointment(
-			_updateJournalArticle(
-				appointment.getTitle(), content, journalArticle));
-	}
 
 	@Override
 	public void deleteAppointment(Long appointmentId) throws Exception {
@@ -88,52 +54,51 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 	}
 
 	@Override
+	public Appointment getAppointment(Long appointmentId) throws Exception {
+		return _toAppointment(
+			_journalArticleService.getLatestArticle(appointmentId));
+	}
+
+	@Override
+	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
+		throws Exception {
+
+		List<JournalArticle> articles = _journalArticleService.getArticles(
+			siteId, 0, contextAcceptLanguage.getPreferredLocale());
+
+		List<Appointment> appointments = new ArrayList<>(articles.size());
+
+		for (JournalArticle article : articles) {
+			appointments.add(_toAppointment(article));
+		}
+
+		return Page.of(appointments);
+	}
+
+	@Override
 	public Appointment postSiteAppointment(Long siteId, Appointment appointment)
 		throws Exception {
 
 		JournalArticle journalArticle = _createJournalArticle(
 			siteId, appointment);
 
-		DDMStructure ddmStructure = journalArticle.getDDMStructure();
-
-		String content = getContent(appointment, ddmStructure);
-
-
-
 		return _toAppointment(journalArticle);
 	}
 
-	private JournalArticle _updateJournalArticle(
-			String title, String content, JournalArticle journalArticle) throws PortalException {
+	@Override
+	public Appointment putAppointment(
+			Long appointmentId, Appointment appointment)
+		throws Exception {
 
-		HashMap<Locale, String> titleMap = new HashMap<>();
+		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
+			appointmentId);
 
-		LocalDateTime localDateTime = LocalDateTimeUtil.toLocalDateTime(
-			journalArticle.getDisplayDate());
+		String content = _getContent(
+			appointment, journalArticle.getDDMStructure());
 
-		titleMap.put(
-			contextAcceptLanguage.getPreferredLocale(), title);
-
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setScopeGroupId(journalArticle.getGroupId());
-
-		return _journalArticleService.updateArticle(
-			journalArticle.getGroupId(), journalArticle.getFolderId(),
-			journalArticle.getArticleId(), journalArticle.getVersion(),
-			titleMap,
-			null,
-			journalArticle.getFriendlyURLMap(),
-			content,
-			journalArticle.getDDMStructureKey(),
-			null,
-			journalArticle.getLayoutUuid(),
-			localDateTime.getMonthValue() - 1,
-			localDateTime.getDayOfMonth(), localDateTime.getYear(),
-			localDateTime.getHour(), localDateTime.getMinute(), 0, 0, 0, 0,
-			0, true, 0, 0, 0, 0, 0, true, true, false, null, null, null,
-			null,
-			serviceContext);
+		return _toAppointment(
+			_updateJournalArticle(
+				appointment.getTitle(), content, journalArticle));
 	}
 
 	private JournalArticle _createJournalArticle(
@@ -144,7 +109,7 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 			siteId, _portal.getClassNameId(JournalArticle.class),
 			"BASIC-WEB-CONTENT", true);
 
-		String content = getContent(appointment, ddmStructure);
+		String content = _getContent(appointment, ddmStructure);
 
 		LocalDateTime localDateTime = LocalDateTimeUtil.toLocalDateTime(
 			new Date());
@@ -167,8 +132,11 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 			true, null, serviceContext);
 	}
 
-	private String getContent(Appointment appointment, DDMStructure ddmStructure) throws Exception {
-		SimpleDateFormat simpleDateFormat = getDateFormat();
+	private String _getContent(
+			Appointment appointment, DDMStructure ddmStructure)
+		throws Exception {
+
+		SimpleDateFormat simpleDateFormat = _getDateFormat();
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
 
@@ -195,6 +163,10 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 		return _journalConverter.getContent(ddmStructure, fields);
 	}
 
+	private SimpleDateFormat _getDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	}
+
 	private Appointment _toAppointment(JournalArticle journalArticle)
 		throws Exception {
 
@@ -209,7 +181,7 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 			journalArticle.getTitle(
 				contextAcceptLanguage.getPreferredLocale()));
 
-		SimpleDateFormat simpleDateFormat = getDateFormat();
+		SimpleDateFormat simpleDateFormat = _getDateFormat();
 
 		appointment.setDate(
 			simpleDateFormat.parse(
@@ -220,8 +192,31 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 		return appointment;
 	}
 
-	private SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	private JournalArticle _updateJournalArticle(
+			String title, String content, JournalArticle journalArticle)
+		throws PortalException {
+
+		HashMap<Locale, String> titleMap = new HashMap<>();
+
+		LocalDateTime localDateTime = LocalDateTimeUtil.toLocalDateTime(
+			journalArticle.getDisplayDate());
+
+		titleMap.put(contextAcceptLanguage.getPreferredLocale(), title);
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setScopeGroupId(journalArticle.getGroupId());
+
+		return _journalArticleService.updateArticle(
+			journalArticle.getGroupId(), journalArticle.getFolderId(),
+			journalArticle.getArticleId(), journalArticle.getVersion(),
+			titleMap, null, journalArticle.getFriendlyURLMap(), content,
+			journalArticle.getDDMStructureKey(), null,
+			journalArticle.getLayoutUuid(), localDateTime.getMonthValue() - 1,
+			localDateTime.getDayOfMonth(), localDateTime.getYear(),
+			localDateTime.getHour(), localDateTime.getMinute(), 0, 0, 0, 0, 0,
+			true, 0, 0, 0, 0, 0, true, true, false, null, null, null, null,
+			serviceContext);
 	}
 
 	@Reference
