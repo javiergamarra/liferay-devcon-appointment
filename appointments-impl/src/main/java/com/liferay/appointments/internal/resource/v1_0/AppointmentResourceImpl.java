@@ -46,6 +46,11 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 
 	@Override
+	public Appointment getAppointment(Long appointmentId) throws Exception {
+		return _toAppointment(_journalArticleService.getLatestArticle(appointmentId));
+	}
+
+	@Override
 	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
 		throws Exception {
 
@@ -133,6 +138,8 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 
 		Fields fields = _journalConverter.getDDMFields(
 			journalArticle.getDDMStructure(), journalArticle.getContent());
+
+		appointment.setId(journalArticle.getResourcePrimKey());
 
 		appointment.setTitle(
 			journalArticle.getTitle(
