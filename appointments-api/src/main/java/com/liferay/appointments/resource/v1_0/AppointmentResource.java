@@ -17,7 +17,11 @@ import javax.annotation.Generated;
 @Generated("")
 public interface AppointmentResource {
 
-	public Page<Appointment> getAppointmentsPage() throws Exception;
+	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
+		throws Exception;
+
+	public Appointment postSiteAppointment(Long siteId, Appointment appointment)
+		throws Exception;
 
 	public void setContextCompany(Company contextCompany);
 

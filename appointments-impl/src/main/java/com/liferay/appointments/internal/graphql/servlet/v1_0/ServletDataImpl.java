@@ -24,6 +24,9 @@ public class ServletDataImpl implements ServletData {
 
 	@Activate
 	public void activate(BundleContext bundleContext) {
+		Mutation.setAppointmentResourceComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects);
+
 		Query.setAppointmentResourceComponentServiceObjects(
 			_appointmentResourceComponentServiceObjects);
 	}

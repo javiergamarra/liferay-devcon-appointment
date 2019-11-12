@@ -10,6 +10,7 @@ import com.liferay.portal.vulcan.pagination.Page;
 
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLInvokeDetached;
+import graphql.annotations.annotationTypes.GraphQLName;
 
 import java.util.Collection;
 
@@ -34,12 +35,16 @@ public class Query {
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Appointment> getAppointmentsPage() throws Exception {
+	public Collection<Appointment> getSiteAppointmentsPage(
+			@GraphQLName("siteId") Long siteId)
+		throws Exception {
+
 		return _applyComponentServiceObjects(
 			_appointmentResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			appointmentResource -> {
-				Page paginationPage = appointmentResource.getAppointmentsPage();
+				Page paginationPage =
+					appointmentResource.getSiteAppointmentsPage(siteId);
 
 				return paginationPage.getItems();
 			});

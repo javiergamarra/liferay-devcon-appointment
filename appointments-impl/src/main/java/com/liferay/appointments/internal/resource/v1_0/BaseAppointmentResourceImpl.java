@@ -8,6 +8,10 @@ import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.util.TransformUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tags;
 
 import java.util.Collection;
@@ -16,8 +20,13 @@ import java.util.List;
 
 import javax.annotation.Generated;
 
+import javax.validation.constraints.NotNull;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -33,11 +42,31 @@ public abstract class BaseAppointmentResourceImpl
 
 	@Override
 	@GET
-	@Path("/appointments")
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "siteId")})
+	@Path("/sites/{siteId}/appointments")
 	@Produces({"application/json", "application/xml"})
 	@Tags(value = {})
-	public Page<Appointment> getAppointmentsPage() throws Exception {
+	public Page<Appointment> getSiteAppointmentsPage(
+			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId)
+		throws Exception {
+
 		return Page.of(Collections.emptyList());
+	}
+
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@Operation(description = "")
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "siteId")})
+	@Path("/sites/{siteId}/appointments")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {})
+	public Appointment postSiteAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
+			Appointment appointment)
+		throws Exception {
+
+		return new Appointment();
 	}
 
 	public void setContextCompany(Company contextCompany) {
