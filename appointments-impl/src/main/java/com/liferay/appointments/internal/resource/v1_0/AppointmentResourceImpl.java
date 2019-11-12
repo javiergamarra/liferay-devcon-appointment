@@ -36,6 +36,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Javier Gamarra
  */
@@ -65,6 +67,16 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 		}
 
 		return Page.of(appointments);
+	}
+
+	@Override
+	public void deleteAppointment(@NotNull Long appointmentId) throws Exception {
+		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
+			appointmentId);
+
+		_journalArticleService.deleteArticle(
+			journalArticle.getGroupId(), journalArticle.getArticleId(),
+			journalArticle.getArticleResourceUuid(), new ServiceContext());
 	}
 
 	@Override
