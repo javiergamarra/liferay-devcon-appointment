@@ -82,6 +82,10 @@ public class AppointmentUtil {
 	public String getContent(Date date, DDMStructure ddmStructure)
 		throws Exception {
 
+		if (date == null) {
+			date = new Date();
+		}
+
 		SimpleDateFormat simpleDateFormat = getDateFormat();
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
