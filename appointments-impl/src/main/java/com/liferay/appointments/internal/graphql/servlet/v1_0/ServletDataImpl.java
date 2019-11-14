@@ -36,7 +36,11 @@ public class ServletDataImpl implements ServletData {
 		return new Mutation();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	@Override
+	@Deprecated
 	public String getPath() {
 		return "/appointments-graphql/v1_0";
 	}

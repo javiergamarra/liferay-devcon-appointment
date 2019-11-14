@@ -1,13 +1,15 @@
 apply plugin: "com.liferay.portal.tools.rest.builder"
 
 dependencies {
+    restBuilder group: "com.liferay", name: "com.liferay.portal.tools.rest.builder", version: "1.0.30"
 	compileOnly group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.9.10"
 	compileOnly group: "com.liferay", name: "com.liferay.dynamic.data.mapping.api", version: "5.2.0"
 	compileOnly group: "com.liferay", name: "com.liferay.journal.api", version: "4.2.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.function", version: "3.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string", version: "3.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.portal.odata.api", version: "2.0.1"
-	compileOnly group: "com.liferay", name: "com.liferay.portal.vulcan.api", version: "3.2.1"
+
+	compileOnly group: "com.liferay", name: "com.liferay.portal.vulcan.api", version: "+"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "4.13.0"
 	compileOnly group: "io.swagger.core.v3", name: "swagger-annotations", version: "2.0.5"
 	compileOnly group: "javax.validation", name: "validation-api", version: "2.0.1.Final"

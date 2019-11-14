@@ -4,20 +4,24 @@ import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
-import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
+import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
+import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLInvokeDetached;
-import graphql.annotations.annotationTypes.GraphQLName;
-
-import java.util.Collection;
+import java.util.function.BiFunction;
 
 import javax.annotation.Generated;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.ComponentServiceObjects;
 
@@ -36,9 +40,13 @@ public class Query {
 			appointmentResourceComponentServiceObjects;
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointment(appointmentId: ___){date, id, title}}"}' -u 'test@liferay.com:test'
+	 */
 	@GraphQLField
-	@GraphQLInvokeDetached
-	public Appointment getAppointment(
+	public Appointment appointment(
 			@GraphQLName("appointmentId") Long appointmentId)
 		throws Exception {
 
@@ -49,27 +57,55 @@ public class Query {
 				appointmentId));
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointments(filter: ___, page: ___, pageSize: ___, search: ___, siteId: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
 	@GraphQLField
-	@GraphQLInvokeDetached
-	public Collection<Appointment> getSiteAppointmentsPage(
+	public AppointmentPage appointments(
 			@GraphQLName("siteId") Long siteId,
+			@GraphQLName("siteKey") String siteKey,
 			@GraphQLName("search") String search,
-			@GraphQLName("filter") Filter filter,
+			@GraphQLName("filter") String filterString,
 			@GraphQLName("pageSize") int pageSize,
-			@GraphQLName("page") int page, @GraphQLName("sorts") Sort[] sorts)
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
 			_appointmentResourceComponentServiceObjects,
 			this::_populateResourceContext,
-			appointmentResource -> {
-				Page paginationPage =
-					appointmentResource.getSiteAppointmentsPage(
-						siteId, search, filter, Pagination.of(pageSize, page),
-						sorts);
+			appointmentResource -> new AppointmentPage(
+				appointmentResource.getSiteAppointmentsPage(
+					siteId, search,
+					_filterBiFunction.apply(appointmentResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(appointmentResource, sortsString))));
+	}
 
-				return paginationPage.getItems();
-			});
+	@GraphQLName("AppointmentPage")
+	public class AppointmentPage {
+
+		public AppointmentPage(Page appointmentPage) {
+			items = appointmentPage.getItems();
+			page = appointmentPage.getPage();
+			pageSize = appointmentPage.getPageSize();
+			totalCount = appointmentPage.getTotalCount();
+		}
+
+		@GraphQLField
+		protected java.util.Collection<Appointment> items;
+
+		@GraphQLField
+		protected long page;
+
+		@GraphQLField
+		protected long pageSize;
+
+		@GraphQLField
+		protected long totalCount;
+
 	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
@@ -95,12 +131,24 @@ public class Query {
 			AppointmentResource appointmentResource)
 		throws Exception {
 
-		appointmentResource.setContextCompany(
-			CompanyLocalServiceUtil.getCompany(
-				CompanyThreadLocal.getCompanyId()));
+		appointmentResource.setContextAcceptLanguage(_acceptLanguage);
+		appointmentResource.setContextCompany(_company);
+		appointmentResource.setContextHttpServletRequest(_httpServletRequest);
+		appointmentResource.setContextHttpServletResponse(_httpServletResponse);
+		appointmentResource.setContextUriInfo(_uriInfo);
+		appointmentResource.setContextUser(_user);
 	}
 
 	private static ComponentServiceObjects<AppointmentResource>
 		_appointmentResourceComponentServiceObjects;
+
+	private AcceptLanguage _acceptLanguage;
+	private BiFunction<Object, String, Filter> _filterBiFunction;
+	private BiFunction<Object, String, Sort[]> _sortsBiFunction;
+	private Company _company;
+	private HttpServletRequest _httpServletRequest;
+	private HttpServletResponse _httpServletResponse;
+	private UriInfo _uriInfo;
+	private User _user;
 
 }
