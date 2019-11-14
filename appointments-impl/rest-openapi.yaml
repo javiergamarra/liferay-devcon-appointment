@@ -8,10 +8,11 @@ components:
           type: string
         id:
           format: int64
-          readOnly: true
           type: integer
         title:
           type: string
+      required:
+        - title
       type: object
 info:
   description: ""
