@@ -1,8 +1,13 @@
 <template>
     <div class="sheet">
+
         <form>
 
             <h1>{{appointment.id ? 'Editing' : 'Adding'}} an appointment</h1>
+
+            <div v-if="loading">
+                <span aria-hidden="true" class="loading-animation"></span>
+            </div>
 
             <div class="form-group form-group-sm">
                 <label for="title">Title</label>
@@ -15,18 +20,21 @@
 
             <div class="sheet-footer">
                 <div class="btn-group">
-                    <button @click="createAppointment()" class="btn btn-group-item btn-primary" v-if="!appointment.id">
-                        Create an
-                        appointment
+                    <button @click="createAppointment()" class="btn btn-group-item btn-primary" type="button"
+                            v-if="!appointment.id">
+                        Create an appointment
                     </button>
                     <button @click="event => updateAppointment(appointment.id)" class="btn btn-group-item btn-primary"
+                            type="button"
                             v-if="appointment.id">Update
                     </button>
                     <button @click="deleteAppointment(appointment.id)" class="btn btn-group-item btn-danger"
+                            type="button"
                             v-if="appointment.id">
                         Delete
                     </button>
-                    <button @click="() => this.$router.push('/')" class="btn btn-group-item btn-secondary">
+                    <button @click="() => this.$router.push('/')" class="btn btn-group-item btn-secondary"
+                            type="button">
                         Cancel
                     </button>
                 </div>
@@ -50,11 +58,15 @@
                     this.$router.push('/')
                 })
             },
-            loadAppointment: function (id) {
-                appointment(id).then(data => {
-                    data.date = data.date && data.date.replace('Z', '');
-                    return this.appointment = data;
-                });
+            loadAppointment: function () {
+                this.appointment.id = this.$route.params.id;
+                if (this.appointment.id) {
+                    this.loading = true;
+                    appointment(this.appointment.id).then(data => {
+                        this.appointment = {...data, date: data.date && data.date.replace('Z', '')};
+                        this.loading = false;
+                    });
+                }
             },
             updateAppointment: function (id) {
                 updateAppointment(id, this.appointment.title, this.toISOString(this.appointment.date)).then(() => {
@@ -66,20 +78,21 @@
                 return new Date(date).toISOString().split('.')[0] + "Z";
             }
         },
+        created() {
+            this.loadAppointment()
+        },
         data() {
             return {
                 appointment: {
                     title: '',
                     date: new Date(),
                 },
+                loading: false
             }
         },
-        mounted() {
-            if (this.$route.params.id) {
-                this.loadAppointment(this.$route.params.id)
-            }
+        watch: {
+            '$route': 'loadAppointment'
         },
-        props: {}
     }
 </script>
 
