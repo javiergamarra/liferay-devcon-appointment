@@ -17,13 +17,13 @@ package com.liferay.appointments.internal.exception;
 /**
  * @author Víctor Galán
  */
-
 import com.liferay.journal.exception.ArticleTitleException;
-import org.osgi.service.component.annotations.Component;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * Converts any {@code ArticleTitleException} to a {@code 400} error.
