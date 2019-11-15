@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div class="container" id="app">
         <Appointments/>
     </div>
 </template>
@@ -15,13 +15,12 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import '../node_modules/@clayui/css/lib/css/atlas.css';
+
     #app {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-        margin-top: 60px;
     }
 </style>

@@ -1,33 +1,80 @@
 <template>
     <div>
 
-        Search
-        <input @keyup="search">
+        <div class="sheet">
 
-        <input v-model="title">
-        <input type="datetime-local" v-model="date">
-        <button @click="createAppointment()">Create an appointment</button>
+            <div class="input-group input-group-sm" style="width: 50%;float: right">
+                <div class="input-group-item input-group-item-shrink ">
+                    <div class="input-group-text">Search</div>
+                </div>
+                <div class="input-group-item input-group-prepend">
+                    <input @keyup="search" class="form-control">
+                </div>
+            </div>
 
-        <ul>
-            <li @click="loadAppointment(appointment.id)" v-bind:key="appointment.id"
-                v-for="appointment in appointments">
-                {{appointment.id}}
-                {{appointment.title}}
-                {{appointment.date}}
-            </li>
-        </ul>
+            <h3 class="autofit-row sheet-subtitle">
+			<span class="autofit-col autofit-col-expand">
+				<span class="heading-text">List of appointments</span>
+			</span>
+                <span class="autofit-col">
+				<span class="heading-end">
+					<button class="btn btn-secondary btn-sm" type="button">
+						Add
+					</button>
+				</span>
+			</span>
+            </h3>
+
+            <div class="table-responsive">
+                <table class="table table-autofit table-hover table-list">
+                    <thead>
+                    <tr>
+                        <th><p class="table-list-title">Id</p></th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tr @click="loadAppointment(appointment.id)" v-bind:key="appointment.id"
+                        v-for="appointment in appointments">
+                        <td>{{appointment.id}}</td>
+                        <td>{{appointment.title}}</td>
+                        <td>{{appointment.date}}</td>
+                        <td>Edit</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="sheet">
+            <form>
+                <div class="form-group form-group-sm">
+                    <label for="title">Title</label>
+                    <input class="form-control" id="title" v-model="title">
+                </div>
+                <div class="form-group form-group-sm">
+                    <label for="date">Date</label>
+                    <input class="form-control" id="date" type="datetime-local" v-model="date">
+                </div>
+                <div class="sheet-footer">
+                    <button @click="createAppointment()" class="btn-primary">Create an appointment</button>
+                </div>
+            </form>
+        </div>
 
         <h1>Selected appointment</h1>
         <p>{{appointment.title}}</p>
-        <button @click="deleteAppointment(appointment.id)">Delete</button>
-        <button @click="event => updateAppointment(appointment.id)">Update</button>
+        <div class="btn-group">
+            <button @click="deleteAppointment(appointment.id)" class="btn-group-item btn-primary">Delete</button>
+            <button @click="event => updateAppointment(appointment.id)" class="btn-group-item btn-primary">Update
+            </button>
+        </div>
     </div>
 
 </template>
 
 <script>
     // eslint-disable-next-line
-    //FIXME use clay and add style
     //TODO page, search?
     //TODO show errors
     import {appointment, appointments, createAppointment, deleteAppointment, updateAppointment} from "../client/client";
