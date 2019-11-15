@@ -52,6 +52,7 @@
 <script>
     // eslint-disable-next-line
     //TODO show errors
+    //TODO preload before mounting
     import {appointments} from "../client/client";
 
     export default {

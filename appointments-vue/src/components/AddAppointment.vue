@@ -2,7 +2,7 @@
     <div class="sheet">
         <form>
 
-            <h1>Adding an appointment</h1>
+            <h1>{{appointment.id ? 'Editing' : 'Adding'}} an appointment</h1>
 
             <div class="form-group form-group-sm">
                 <label for="title">Title</label>
