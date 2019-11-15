@@ -5,12 +5,29 @@
             <span @click="() => this.loadAppointments('')">Appointments</span>
         </h1>
 
-        <div class="input-group input-group-sm" style="width: 50%;float: right">
-            <div class="input-group-item input-group-item-shrink ">
-                <div class="input-group-text">Search</div>
+        <h3 class="autofit-row sheet-subtitle">
+			<span class="autofit-col autofit-col-expand">
+				<span class="heading-text">Filter appointments</span>
+			</span>
+        </h3>
+
+        <div class="form-group form-group-autofit">
+            <div class="input-group input-group-item">
+                <div class="input-group-item input-group-item-shrink ">
+                    <label class="input-group-text" for="searchByTitle">Title</label>
+                </div>
+                <div class="input-group-item input-group-prepend">
+                    <input @keyup="searchByTitle" class="form-control" id="searchByTitle">
+                </div>
             </div>
-            <div class="input-group-item input-group-prepend">
-                <input @keyup="search" class="form-control">
+
+            <div class="input-group input-group-item">
+                <div class="input-group-item input-group-item-shrink">
+                    <label class="input-group-text" for="searchByDate">Date</label>
+                </div>
+                <div class="input-group-item input-group-prepend">
+                    <input @change="searchByDate" class="form-control" id="searchByDate" type="date">
+                </div>
             </div>
         </div>
 
@@ -57,9 +74,16 @@
     export default {
         methods: {
             loadAppointments: function (filter) {
-                appointments(filter).then(data => this.appointments = data.items).catch(err => this.$emit('error', err));
+                appointments(filter).then(data => {
+                    this.appointments = data.items;
+                }).catch(err => {
+                    this.$emit('error', err);
+                });
             },
-            search: function (event) {
+            searchByDate: function(event) {
+                this.loadAppointments(`date gt ${event.target.value}`);
+            },
+            searchByTitle: function (event) {
                 this.loadAppointments(`contains(title, '${event.target.value}')`);
             },
         },

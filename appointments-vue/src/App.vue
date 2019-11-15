@@ -22,7 +22,7 @@
         },
         methods: {
             error: function (errorObj) {
-                this.errorMsg = errorObj[0].message;
+                this.errorMsg = errorObj && errorObj[0].message || errorObj;
             }
         }
     }

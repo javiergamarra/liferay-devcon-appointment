@@ -2,7 +2,6 @@
     <div class="sheet">
 
         <form>
-
             <h1>{{appointment.id ? 'Editing' : 'Adding'}} an appointment</h1>
 
             <div v-if="loading">
@@ -24,13 +23,12 @@
                             v-if="!appointment.id">
                         Create an appointment
                     </button>
-                    <button @click="event => updateAppointment(appointment.id)" class="btn btn-group-item btn-primary"
-                            type="button"
-                            v-if="appointment.id">Update
+                    <button @click="updateAppointment(appointment.id)" class="btn btn-group-item btn-primary"
+                            type="button" v-if="appointment.id">
+                        Update
                     </button>
                     <button @click="deleteAppointment(appointment.id)" class="btn btn-group-item btn-danger"
-                            type="button"
-                            v-if="appointment.id">
+                            type="button" v-if="appointment.id">
                         Delete
                     </button>
                     <button @click="() => this.$router.push('/')" class="btn btn-group-item btn-secondary"
@@ -51,12 +49,16 @@
             createAppointment: function () {
                 createAppointment(this.appointment.title, this.toISOString(this.appointment.date)).then(() =>
                     this.$router.push('/')
-                ).catch(err => this.$emit('error', err));
+                ).catch(err => {
+                    this.$emit('error', err);
+                });
             },
             deleteAppointment: function (id) {
                 deleteAppointment(id).then(() => {
                     this.$router.push('/')
-                }).catch(err => this.$emit('error', err));
+                }).catch(err => {
+                    this.$emit('error', err);
+                });
             },
             loadAppointment: function () {
                 this.appointment.id = this.$route.params.id;
@@ -65,14 +67,18 @@
                     appointment(this.appointment.id).then(data => {
                         this.appointment = {...data, date: data.date && data.date.replace('Z', '')};
                         this.loading = false;
-                    }).catch(err => this.$emit('error', err));
+                    }).catch(err => {
+                        this.$emit('error', err);
+                    });
                 }
             },
             updateAppointment: function (id) {
                 updateAppointment(id, this.appointment.title, this.toISOString(this.appointment.date)).then(() => {
                         this.$router.push('/')
                     }
-                ).catch(err => this.$emit('error', err));
+                ).catch(err => {
+                    this.$emit('error', err);
+                });
             },
             toISOString: function (date) {
                 return new Date(date).toISOString().split('.')[0] + "Z";

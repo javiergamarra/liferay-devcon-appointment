@@ -1,7 +1,8 @@
 const SERVER_GRAPHQL_ENDPOINT = 'http://localhost:8080/o/graphql';
 const AUTHORIZATION = 'Basic dGVzdEBsaWZlcmF5LmNvbTp0ZXN0';
+const SITE_KEY = 'Guest';
 
-export const appointments = (filter = '', siteKey = 'guest') =>
+export const appointments = (filter = '', siteKey = SITE_KEY) =>
     request(gql`   
         query {
             appointments(filter: ${filter}, siteKey: ${siteKey}){
@@ -28,7 +29,7 @@ export const appointment = appointmentId =>
         }
     `);
 
-export const createAppointment = (title, date, siteKey = 'guest') =>
+export const createAppointment = (title, date, siteKey = SITE_KEY) =>
     request(gql`   
         mutation {
             createSiteAppointment(appointment: { date: ${date}, title: ${title}}, siteKey: ${siteKey}) {
@@ -68,9 +69,9 @@ function request(query) {
         }
     ).then(response => response.json()
     ).then(json => {
-        const data = json.data;
+        if (json.errors) return Promise.reject(json.errors);
 
-        if (!data) return Promise.reject(json.errors);
+        const data = json.data;
 
         return data[Object.keys(data)[0]];
     })
