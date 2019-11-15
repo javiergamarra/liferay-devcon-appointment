@@ -3,10 +3,12 @@ package com.liferay.appointments.internal.resource.v1_0;
 import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.appointments.internal.odata.AppointmentEntityModel;
 import com.liferay.appointments.internal.util.AppointmentUtil;
+import com.liferay.appointments.internal.util.DateEntityFieldProvider;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
@@ -20,11 +22,12 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.SearchUtil;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author Javier Gamarra
@@ -53,8 +56,15 @@ public class AppointmentResourceImpl
 	}
 
 	@Override
-	public EntityModel getEntityModel(MultivaluedMap multivaluedMap) {
-		return new AppointmentEntityModel();
+	public EntityModel getEntityModel(MultivaluedMap multivaluedMap)
+		throws PortalException {
+
+		Object siteId = multivaluedMap.getFirst("siteId");
+
+		DDMStructure ddmStructure = _appointmentUtil.getDDMStructure(siteId);
+
+		return new AppointmentEntityModel(
+			_dateEntityFieldProvider.getDateEntityField(ddmStructure));
 	}
 
 	@Override
@@ -144,6 +154,9 @@ public class AppointmentResourceImpl
 
 	@Reference
 	private AppointmentUtil _appointmentUtil;
+
+	@Reference
+	private DateEntityFieldProvider _dateEntityFieldProvider;
 
 	@Reference
 	private JournalArticleService _journalArticleService;

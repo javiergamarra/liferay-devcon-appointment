@@ -28,12 +28,14 @@ import java.util.stream.Stream;
 
 public class AppointmentEntityModel implements EntityModel {
 
-	public AppointmentEntityModel() {
+	public AppointmentEntityModel(EntityField entityField) {
 		_entityFieldsMap = Stream.of(
 			new StringEntityField(
 				"title",
 				locale -> Field.getSortableFieldName(
-					"localized_title_".concat(LocaleUtil.toLanguageId(locale))))
+					"localized_title_".concat(
+						LocaleUtil.toLanguageId(locale)))),
+			entityField
 		).collect(
 			Collectors.toMap(EntityField::getName, Function.identity())
 		);

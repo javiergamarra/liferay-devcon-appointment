@@ -16,8 +16,8 @@ package com.liferay.appointments.internal.util;
 
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.service.DDMStructureService;
+import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.storage.Fields;
@@ -26,19 +26,20 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
 
-import java.text.SimpleDateFormat;
-
 import java.time.LocalDateTime;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,9 +54,7 @@ public class AppointmentUtil {
 			long siteId, String title, Date date)
 		throws Exception {
 
-		DDMStructure ddmStructure = _ddmStructureService.getStructure(
-			siteId, _portal.getClassNameId(JournalArticle.class),
-			"BASIC-WEB-CONTENT", true);
+		DDMStructure ddmStructure = getDDMStructure(siteId);
 
 		String content = getContent(date, ddmStructure);
 
@@ -86,24 +85,22 @@ public class AppointmentUtil {
 			date = new Date();
 		}
 
-		SimpleDateFormat simpleDateFormat = getDateFormat();
+		String dateString = DateUtil.getDate(
+			date, "yyyy-MM-dd", LocaleUtil.getDefault(),
+			TimeZone.getTimeZone("UTC"));
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
 
-		LocalizedValue localizedValue = new LocalizedValue();
-
-		localizedValue.addString(
-			LocaleUtil.getDefault(), simpleDateFormat.format(date));
-
 		DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
 
-		ddmFormFieldValue.setName("content");
-		ddmFormFieldValue.setValue(localizedValue);
+		ddmFormFieldValue.setName("date");
+		ddmFormFieldValue.setValue(new UnlocalizedValue(dateString));
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 
 		ddmFormValues.setAvailableLocales(ddmForm.getAvailableLocales());
-		ddmFormValues.setDDMFormFieldValues(Arrays.asList(ddmFormFieldValue));
+		ddmFormValues.setDDMFormFieldValues(
+			Collections.singletonList(ddmFormFieldValue));
 		ddmFormValues.setDefaultLocale(ddmForm.getDefaultLocale());
 
 		Fields fields = _ddm.getFields(
@@ -116,22 +113,29 @@ public class AppointmentUtil {
 		Fields fields = _journalConverter.getDDMFields(
 			journalArticle.getDDMStructure(), journalArticle.getContent());
 
-		SimpleDateFormat simpleDateFormat = getDateFormat();
-
-		return simpleDateFormat.parse(
+		return DateUtil.parseDate(
+			"yyyy-MM-dd",
 			(String)fields.get(
-				"content"
-			).getValue());
+				"date"
+			).getValue(),
+			LocaleUtil.getDefault());
 	}
 
-	public SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-	}
+	public DDMStructure getDDMStructure(Object siteId) throws PortalException {
+		long groupId = 0;
 
-	public DDMStructure getDDMStructure(long siteId) throws PortalException {
-		return _ddmStructureService.getStructure(
-			siteId, _portal.getClassNameId(JournalArticle.class),
-			"BASIC-WEB-CONTENT", true);
+		if (siteId instanceof String) {
+			groupId = GroupLocalServiceUtil.fetchGroup(
+				_portal.getDefaultCompanyId(), (String)siteId
+			).getGroupId();
+		}
+		else {
+			groupId = (long)siteId;
+		}
+
+		return _ddmStructureLocalService.fetchStructure(
+			groupId, _portal.getClassNameId(JournalArticle.class),
+			"appointment-structure");
 	}
 
 	public JournalArticle updateJournalArticle(
@@ -165,7 +169,7 @@ public class AppointmentUtil {
 	private DDM _ddm;
 
 	@Reference
-	private DDMStructureService _ddmStructureService;
+	private DDMStructureLocalService _ddmStructureLocalService;
 
 	@Reference
 	private JournalArticleService _journalArticleService;
