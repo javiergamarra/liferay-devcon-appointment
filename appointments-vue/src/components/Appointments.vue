@@ -1,7 +1,9 @@
 <template>
     <div class="sheet">
 
-        <h1>Appointments</h1>
+        <h1>
+            <span @click="() => this.loadAppointments('')">Appointments</span>
+        </h1>
 
         <div class="input-group input-group-sm" style="width: 50%;float: right">
             <div class="input-group-item input-group-item-shrink ">
@@ -50,15 +52,12 @@
 </template>
 
 <script>
-    // eslint-disable-next-line
-    //TODO show errors
-    //TODO preload before mounting
     import {appointments} from "../client/client";
 
     export default {
         methods: {
             loadAppointments: function (filter) {
-                appointments(filter).then(data => this.appointments = data.items);
+                appointments(filter).then(data => this.appointments = data.items).catch(err => this.$emit('error', err));
             },
             search: function (event) {
                 this.loadAppointments(`contains(title, '${event.target.value}')`);

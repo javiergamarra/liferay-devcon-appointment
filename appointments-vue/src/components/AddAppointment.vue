@@ -51,12 +51,12 @@
             createAppointment: function () {
                 createAppointment(this.appointment.title, this.toISOString(this.appointment.date)).then(() =>
                     this.$router.push('/')
-                )
+                ).catch(err => this.$emit('error', err));
             },
             deleteAppointment: function (id) {
                 deleteAppointment(id).then(() => {
                     this.$router.push('/')
-                })
+                }).catch(err => this.$emit('error', err));
             },
             loadAppointment: function () {
                 this.appointment.id = this.$route.params.id;
@@ -65,14 +65,14 @@
                     appointment(this.appointment.id).then(data => {
                         this.appointment = {...data, date: data.date && data.date.replace('Z', '')};
                         this.loading = false;
-                    });
+                    }).catch(err => this.$emit('error', err));
                 }
             },
             updateAppointment: function (id) {
                 updateAppointment(id, this.appointment.title, this.toISOString(this.appointment.date)).then(() => {
                         this.$router.push('/')
                     }
-                )
+                ).catch(err => this.$emit('error', err));
             },
             toISOString: function (date) {
                 return new Date(date).toISOString().split('.')[0] + "Z";

@@ -73,7 +73,7 @@ function request(query) {
         if (!data) return Promise.reject(json.errors);
 
         return data[Object.keys(data)[0]];
-    });
+    })
 }
 
 function getURL(path, params = {p_auth: ''}) {
