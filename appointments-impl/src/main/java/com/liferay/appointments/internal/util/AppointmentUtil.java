@@ -26,8 +26,8 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -130,12 +130,19 @@ public class AppointmentUtil {
 				_portal.getDefaultCompanyId(), (String)siteId
 			).getGroupId();
 		}
-		else if (siteId instanceof Long){
+		else if (siteId instanceof Long) {
 			groupId = (long)siteId;
 		}
 		else {
-			groupId = _groupLocalService.getGroup(
-				_portal.getDefaultCompanyId(), "guest").getGroupId();
+			Group group = _groupLocalService.getGroup(
+				_portal.getDefaultCompanyId(), "Guest");
+
+			if (group == null) {
+				group = _groupLocalService.fetchGroup(
+					_portal.getDefaultCompanyId(), "Guest");
+			}
+
+			groupId = group.getGroupId();
 		}
 
 		return _ddmStructureLocalService.fetchStructure(
@@ -171,13 +178,13 @@ public class AppointmentUtil {
 	}
 
 	@Reference
-	private GroupLocalService _groupLocalService;
-
-	@Reference
 	private DDM _ddm;
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private JournalArticleService _journalArticleService;

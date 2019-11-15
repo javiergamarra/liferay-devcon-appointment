@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -53,8 +53,13 @@ public class AppointmentStructureCreator {
 
 	@Activate
 	public void activate() throws PortalException {
-		Group group = GroupLocalServiceUtil.getGroup(
-			_portal.getDefaultCompanyId(), "guest");
+		Group group = _groupLocalService.fetchGroup(
+			_portal.getDefaultCompanyId(), "Guest");
+
+		if (group == null) {
+			_groupLocalService.fetchGroup(
+				_portal.getDefaultCompanyId(), "guest");
+		}
 
 		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
 			group.getGroupId(), _portal.getClassNameId(JournalArticle.class),
@@ -116,6 +121,9 @@ public class AppointmentStructureCreator {
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference(target = "(ddm.form.deserializer.type=json)")
 	private DDMFormDeserializer _jsonDDMFormDeserializer;
