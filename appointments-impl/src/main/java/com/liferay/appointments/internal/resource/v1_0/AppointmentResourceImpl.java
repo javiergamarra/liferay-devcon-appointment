@@ -1,6 +1,7 @@
 package com.liferay.appointments.internal.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.dto.v1_0.Owner;
 import com.liferay.appointments.internal.odata.AppointmentEntityModel;
 import com.liferay.appointments.internal.util.AppointmentUtil;
 import com.liferay.appointments.internal.util.DateEntityFieldProvider;
@@ -9,12 +10,14 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
@@ -53,6 +56,20 @@ public class AppointmentResourceImpl
 	public Appointment getAppointment(Long appointmentId) throws Exception {
 		return _toAppointment(
 			_journalArticleService.getLatestArticle(appointmentId));
+	}
+
+	@Override
+	public Owner getAppointmentOwner(Long appointmentId) throws Exception {
+		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
+			appointmentId);
+
+		User user = _userService.getUserById(journalArticle.getUserId());
+
+		Owner owner = new Owner();
+
+		owner.setName(user.getFullName());
+
+		return owner;
 	}
 
 	@Override
@@ -160,5 +177,8 @@ public class AppointmentResourceImpl
 
 	@Reference
 	private JournalArticleService _journalArticleService;
+
+	@Reference
+	private UserService _userService;
 
 }
