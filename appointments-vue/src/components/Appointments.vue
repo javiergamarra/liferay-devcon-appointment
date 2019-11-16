@@ -17,7 +17,7 @@
                     <label class="input-group-text" for="searchByTitle">Title</label>
                 </div>
                 <div class="input-group-item input-group-prepend">
-                    <input @keyup="searchByTitle" class="form-control" id="searchByTitle">
+                    <input @keyup="filterByTitle" class="form-control" id="searchByTitle">
                 </div>
             </div>
 
@@ -26,7 +26,7 @@
                     <label class="input-group-text" for="searchByDate">Date</label>
                 </div>
                 <div class="input-group-item input-group-prepend">
-                    <input @change="searchByDate" class="form-control" id="searchByDate" type="date">
+                    <input @change="filterByDate" class="form-control" id="searchByDate" type="date">
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-    import {appointments} from "../client/client";
+    import {appointments} from "../client/rest-client";
 
     export default {
         methods: {
@@ -80,11 +80,11 @@
                     this.$emit('error', err);
                 });
             },
-            searchByDate: function(event) {
-                this.loadAppointments(`date gt ${event.target.value}`);
-            },
-            searchByTitle: function (event) {
+            filterByTitle: function (event) {
                 this.loadAppointments(`contains(title, '${event.target.value}')`);
+            },
+            filterByDate: function(event) {
+                this.loadAppointments(`date gt ${event.target.value}`);
             },
         },
         data() {
