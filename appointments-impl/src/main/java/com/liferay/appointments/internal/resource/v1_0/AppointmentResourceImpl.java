@@ -111,7 +111,6 @@ public class AppointmentResourceImpl
 				searchContext.setAttribute(
 					com.liferay.portal.kernel.search.Field.STATUS,
 					WorkflowConstants.STATUS_APPROVED);
-				searchContext.setAttribute("head", Boolean.TRUE);
 				searchContext.setCompanyId(contextCompany.getCompanyId());
 				searchContext.setGroupIds(new long[] {siteId});
 			},
