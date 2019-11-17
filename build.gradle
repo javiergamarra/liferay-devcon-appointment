@@ -21,6 +21,6 @@ allprojects {
 	}
 
 	liferay {
-		deployDir = "/Users/victorg/Documents/Liferay/Portal/bundles/deploy"
+		deployDir = "<your-deploy-dir>"
 	}
 }
