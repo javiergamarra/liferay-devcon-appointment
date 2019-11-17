@@ -365,6 +365,22 @@ public Page<Appointment> getSiteAppointmentsPage(
 }
 ```
 
+### EntityModel
+
+```java
+@Override
+public EntityModel getEntityModel(MultivaluedMap multivaluedMap)
+	throws PortalException {
+
+	Object siteId = multivaluedMap.getFirst("siteId");
+
+	DDMStructure ddmStructure = _appointmentUtil.getDDMStructure(siteId);
+
+	return new AppointmentEntityModel(
+		_dateEntityFieldProvider.getDateEntityField(ddmStructure));
+}
+```
+
 ## Error handling 
 
 ```
@@ -399,4 +415,56 @@ public class AppointmentTitleExceptionMapper
 ```
 required:
     - title
+```
+
+## Owner
+#### rest-openapi.yaml
+
+```yaml
+Owner:
+    properties:
+        name:
+            type: string
+```
+```yaml
+"/appointments/{appointmentId}/owner":
+    get:
+        operationId: getAppointmentOwner
+        parameters:
+            - in: path
+              name: appointmentId
+              required: true
+              schema:
+                  format: int64
+                  type: integer
+        responses:
+            200:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Owner"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Owner"
+                description: ""
+        tags: ["Appointment"]
+```
+
+### AppointmentResourceImpl.java
+
+
+```java
+@Override
+public Owner getAppointmentOwner(Long appointmentId) throws Exception {
+	JournalArticle journalArticle = _journalArticleService.getLatestArticle(
+		appointmentId);
+
+	User user = _userService.getUserById(journalArticle.getUserId());
+
+	Owner owner = new Owner();
+
+	owner.setName(user.getFullName());
+
+	return owner;
+}
 ```
