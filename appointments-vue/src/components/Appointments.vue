@@ -80,11 +80,17 @@
                     this.$emit('error', err);
                 });
             },
+            // eslint-disable-next-line no-unused-vars
             filterByTitle: function (event) {
-                this.loadAppointments(`contains(title, '${event.target.value}')`);
+                this.loadAppointments(
+                    //FILLME !
+                );
             },
+            // eslint-disable-next-line no-unused-vars
             filterByDate: function(event) {
-                this.loadAppointments(`date gt ${event.target.value}`);
+                this.loadAppointments(
+                    //FILLME !
+                    );
             },
         },
         data() {

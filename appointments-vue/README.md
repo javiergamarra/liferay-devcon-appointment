@@ -10,15 +10,77 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Exercises
+
+#### List appointments
+
 ```
-npm run build
+query {
+            appointments(filter: ${filter}, siteKey: ${siteKey}){
+                items {
+                    id
+                    date
+                    title
+                }
+                page
+                pageSize
+                totalCount
+            }
+        }
 ```
 
-### Lints and fixes files
+### Create appointment
+
 ```
-npm run lint
+mutation {
+            createSiteAppointment(appointment: { date: ${date}, title: ${title}}, siteKey: ${siteKey}) {
+                date
+                id
+                title
+            }
+        }
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+#### Get appointment 
+
+```
+query {
+            appointment(appointmentId: ${appointmentId}){
+                id
+                date
+                title
+            }
+        }
+```
+
+#### Update appointment
+
+```
+ mutation {
+            updateAppointment(appointment: { date: ${date}, title: ${title}}, appointmentId: ${appointmentId}) {
+                date
+                id
+                title
+            }
+        }
+```
+
+#### Delete appointment
+
+```
+mutation {
+            deleteAppointment(appointmentId: ${appointmentId})
+        }
+```
+
+#### Filter by title
+
+```
+`contains(title, '${event.target.value}')`
+````
+
+#### Filter by date
+
+```
+`date gt ${event.target.value}`
+```

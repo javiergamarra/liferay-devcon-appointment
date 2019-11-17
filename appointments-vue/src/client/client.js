@@ -2,60 +2,34 @@ const SERVER_GRAPHQL_ENDPOINT = 'http://localhost:8080/o/graphql';
 const AUTHORIZATION = 'Basic dGVzdEBsaWZlcmF5LmNvbTp0ZXN0';
 const SITE_KEY = 'Guest';
 
+// eslint-disable-next-line no-unused-vars
 export const appointments = (filter = '', siteKey = SITE_KEY) =>
     request(gql`   
-        query {
-            appointments(filter: ${filter}, siteKey: ${siteKey}){
-                items {
-                    id
-                    date
-                    title
-                }
-                page
-                pageSize
-                totalCount
-            }
-        }
+        //FILLME!
     `);
 
+// eslint-disable-next-line no-unused-vars
 export const appointment = appointmentId =>
     request(gql`   
-        query {
-            appointment(appointmentId: ${appointmentId}){
-                id
-                date
-                title
-            }
-        }
+        //FILLME!
     `);
 
+// eslint-disable-next-line no-unused-vars
 export const createAppointment = (title, date, siteKey = SITE_KEY) =>
     request(gql`   
-        mutation {
-            createSiteAppointment(appointment: { date: ${date}, title: ${title}}, siteKey: ${siteKey}) {
-                date
-                id
-                title
-            }
-        }
+        //FILLME!
     `);
 
+// eslint-disable-next-line no-unused-vars
 export const deleteAppointment = appointmentId =>
     request(gql`   
-        mutation {
-            deleteAppointment(appointmentId: ${appointmentId})
-        }
+        //FILLME!
     `);
 
+// eslint-disable-next-line no-unused-vars
 export const updateAppointment = (appointmentId, title, date) =>
     request(gql`   
-        mutation {
-            updateAppointment(appointment: { date: ${date}, title: ${title}}, appointmentId: ${appointmentId}) {
-                date
-                id
-                title
-            }
-        }
+        //FIXME!
     `);
 
 function request(query) {
