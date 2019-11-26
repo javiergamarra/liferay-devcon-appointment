@@ -22,6 +22,8 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 
+import javax.validation.constraints.NotEmpty;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -31,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Generated("")
 @GraphQLName("Appointment")
 @JsonFilter("Liferay.Vulcan")
+@Schema(requiredProperties = {"title"})
 @XmlRootElement(name = "Appointment")
 public class Appointment {
 
@@ -112,6 +115,7 @@ public class Appointment {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@NotEmpty
 	protected String title;
 
 	@Override
