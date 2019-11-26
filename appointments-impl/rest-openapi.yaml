@@ -11,6 +11,8 @@ components:
           type: integer
         title:
           type: string
+      required:
+        - title
       type: object
 info:
   description: ""
