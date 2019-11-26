@@ -9,6 +9,7 @@ import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.util.TransformUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -25,7 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import javax.validation.constraints.NotNull;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -56,6 +59,27 @@ public abstract class BaseAppointmentResourceImpl
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/appointments/v1.0/sites/{siteId}/appointments' -d $'{"date": ___, "id": ___, "title": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
+	@Override
+	@Consumes({"application/json", "application/xml"})
+	@Operation(description = "")
+	@POST
+	@Parameters(value = {@Parameter(in = ParameterIn.PATH, name = "siteId")})
+	@Path("/sites/{siteId}/appointments")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Appointment")})
+	public Appointment postSiteAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("siteId") Long siteId,
+			Appointment appointment)
+		throws Exception {
+
+		return new Appointment();
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
