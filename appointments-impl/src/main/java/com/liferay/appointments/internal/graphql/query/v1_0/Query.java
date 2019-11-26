@@ -57,6 +57,23 @@ public class Query {
 				appointmentResource.getSiteAppointmentsPage(siteId)));
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointment(appointmentId: ___){date, id, title}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField
+	public Appointment appointment(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.getAppointment(
+				appointmentId));
+	}
+
 	@GraphQLName("AppointmentPage")
 	public class AppointmentPage {
 
