@@ -30,6 +30,9 @@ public interface AppointmentResource {
 	public Page<Appointment> getSiteAppointmentsPage(Long siteId)
 		throws Exception;
 
+	public Appointment postSiteAppointment(Long siteId, Appointment appointment)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}
