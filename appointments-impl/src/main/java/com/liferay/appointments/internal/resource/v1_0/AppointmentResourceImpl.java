@@ -39,6 +39,11 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
   }
 
   @Override
+  public Appointment getAppointment(Long appointmentId) throws Exception {
+    return _toAppointment(_journalArticleService.getLatestArticle(appointmentId));
+  }
+
+  @Override
   public Appointment postSiteAppointment(Long siteId, Appointment appointment) throws Exception {
 
     JournalArticle journalArticle = _appointmentUtil.createJournalArticle(siteId, appointment.getTitle(),
