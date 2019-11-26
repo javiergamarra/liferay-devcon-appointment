@@ -1,6 +1,7 @@
 package com.liferay.appointments.internal.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.dto.v1_0.Owner;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.model.Company;
@@ -164,6 +165,27 @@ public abstract class BaseAppointmentResourceImpl
 		throws Exception {
 
 		return new Appointment();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/appointments/v1.0/appointments/{appointmentId}/owner'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@GET
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
+	)
+	@Path("/appointments/{appointmentId}/owner")
+	@Produces({"application/json", "application/xml"})
+	@Tags(value = {@Tag(name = "Appointment")})
+	public Owner getAppointmentOwner(
+			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
+				appointmentId)
+		throws Exception {
+
+		return new Owner();
 	}
 
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {

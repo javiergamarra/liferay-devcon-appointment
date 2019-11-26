@@ -1,6 +1,7 @@
 package com.liferay.appointments.resource.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.dto.v1_0.Owner;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Sort;
@@ -45,6 +46,8 @@ public interface AppointmentResource {
 	public Appointment putAppointment(
 			Long appointmentId, Appointment appointment)
 		throws Exception;
+
+	public Owner getAppointmentOwner(Long appointmentId) throws Exception;
 
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {

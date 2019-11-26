@@ -1,6 +1,7 @@
 package com.liferay.appointments.internal.graphql.query.v1_0;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.dto.v1_0.Owner;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
@@ -11,6 +12,7 @@ import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
+import com.liferay.portal.vulcan.graphql.annotation.GraphQLTypeExtension;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
@@ -82,6 +84,43 @@ public class Query {
 			this::_populateResourceContext,
 			appointmentResource -> appointmentResource.getAppointment(
 				appointmentId));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointmentOwner(appointmentId: ___){name}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField
+	public Owner appointmentOwner(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.getAppointmentOwner(
+				appointmentId));
+	}
+
+	@GraphQLTypeExtension(Appointment.class)
+	public class GetAppointmentOwnerTypeExtension {
+
+		public GetAppointmentOwnerTypeExtension(Appointment appointment) {
+			_appointment = appointment;
+		}
+
+		@GraphQLField
+		public Owner owner() throws Exception {
+			return _applyComponentServiceObjects(
+				_appointmentResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				appointmentResource -> appointmentResource.getAppointmentOwner(
+					_appointment.getId()));
+		}
+
+		private Appointment _appointment;
+
 	}
 
 	@GraphQLName("AppointmentPage")
