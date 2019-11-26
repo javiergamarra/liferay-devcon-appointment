@@ -1,0 +1,49 @@
+components:
+  schemas:
+    Appointment:
+      description: Represents an appointment.
+      properties:
+        date:
+          format: date-time
+          type: string
+        id:
+          format: int64
+          type: integer
+        title:
+          type: string
+      type: object
+info:
+  description: ""
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  title: "Appointments"
+  version: v1.0
+openapi: 3.0.1
+paths:
+  "/sites/{siteId}/appointments":
+    get:
+      operationId: getSiteAppointmentsPage
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Appointment"
+                type: array
+            application/xml:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Appointment"
+                type: array
+          description: "Get appointments"
+      tags: ["Appointment"]
+
