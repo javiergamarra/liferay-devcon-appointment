@@ -45,6 +45,16 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
   }
 
   @Override
+  public Appointment putAppointment(Long appointmentId, Appointment appointment) throws Exception {
+
+    JournalArticle journalArticle = _journalArticleService.getLatestArticle(appointmentId);
+
+    String content = _appointmentUtil.getContent(appointment.getDate(), journalArticle.getDDMStructure());
+
+    return _toAppointment(_appointmentUtil.updateJournalArticle(appointment.getTitle(), content, journalArticle));
+  }
+
+  @Override
   public void deleteAppointment(Long appointmentId) throws Exception {
     JournalArticle journalArticle = _journalArticleService.getLatestArticle(appointmentId);
 

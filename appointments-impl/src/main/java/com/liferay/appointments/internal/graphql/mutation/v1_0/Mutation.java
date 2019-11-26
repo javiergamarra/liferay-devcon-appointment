@@ -62,6 +62,19 @@ public class Mutation {
 		return true;
 	}
 
+	@GraphQLField
+	public Appointment updateAppointment(
+			@GraphQLName("appointmentId") Long appointmentId,
+			@GraphQLName("appointment") Appointment appointment)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.putAppointment(
+				appointmentId, appointment));
+	}
+
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
 				ComponentServiceObjects<T> componentServiceObjects,
