@@ -1,0 +1,9 @@
+Bundle-Name: appointments-api
+Bundle-SymbolicName: appointments-api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.appointments.dto.v1_0,\
+	com.liferay.appointments.resource.v1_0
+Import-Package: com.liferay.*;version="[1.0.0,99.0.0)",\
+\
+	*
