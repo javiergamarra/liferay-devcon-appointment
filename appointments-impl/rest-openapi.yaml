@@ -111,4 +111,32 @@ paths:
           content:
             application/json: {}
       tags: ["Appointment"]
-
+    put:
+      description: Updates an appointment
+      operationId: putAppointment
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Appointment"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+          description: ""
+      tags: ["Appointment"]
