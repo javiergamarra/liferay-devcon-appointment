@@ -48,6 +48,20 @@ public class Mutation {
 				siteId, appointment));
 	}
 
+	@GraphQLField
+	public boolean deleteAppointment(
+			@GraphQLName("appointmentId") Long appointmentId)
+		throws Exception {
+
+		_applyVoidComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.deleteAppointment(
+				appointmentId));
+
+		return true;
+	}
+
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
 				ComponentServiceObjects<T> componentServiceObjects,

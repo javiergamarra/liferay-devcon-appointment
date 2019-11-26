@@ -9,6 +9,7 @@ import com.liferay.appointments.internal.util.AppointmentUtil;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.vulcan.pagination.Page;
 
 import org.osgi.service.component.annotations.Component;
@@ -41,6 +42,14 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
   @Override
   public Appointment getAppointment(Long appointmentId) throws Exception {
     return _toAppointment(_journalArticleService.getLatestArticle(appointmentId));
+  }
+
+  @Override
+  public void deleteAppointment(Long appointmentId) throws Exception {
+    JournalArticle journalArticle = _journalArticleService.getLatestArticle(appointmentId);
+
+    _journalArticleService.deleteArticle(journalArticle.getGroupId(), journalArticle.getArticleId(),
+        journalArticle.getArticleResourceUuid(), new ServiceContext());
   }
 
   @Override
