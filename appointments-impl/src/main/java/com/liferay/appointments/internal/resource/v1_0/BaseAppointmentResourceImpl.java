@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -80,6 +81,26 @@ public abstract class BaseAppointmentResourceImpl
 		throws Exception {
 
 		return new Appointment();
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/appointments/v1.0/appointments/{appointmentId}'  -u 'test@liferay.com:test'
+	 */
+	@Override
+	@DELETE
+	@Operation(description = "Deletes an appointment")
+	@Parameters(
+		value = {@Parameter(in = ParameterIn.PATH, name = "appointmentId")}
+	)
+	@Path("/appointments/{appointmentId}")
+	@Produces("application/json")
+	@Tags(value = {@Tag(name = "Appointment")})
+	public void deleteAppointment(
+			@NotNull @Parameter(hidden = true) @PathParam("appointmentId") Long
+				appointmentId)
+		throws Exception {
 	}
 
 	/**
