@@ -8,6 +8,7 @@ import com.liferay.appointments.dto.v1_0.Appointment;
 import com.liferay.appointments.internal.util.AppointmentUtil;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleService;
 import com.liferay.portal.vulcan.pagination.Page;
 
 import org.osgi.service.component.annotations.Component;
@@ -25,15 +26,13 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 
   @Override
   public Page<Appointment> getSiteAppointmentsPage(Long siteId) throws Exception {
-    List<Appointment> appointments = new ArrayList<>(10);
+    List<Appointment> appointments = new ArrayList<>();
 
-    for (int i = 0; i < 10; i++) {
-      Appointment appointment = new Appointment();
+    List<JournalArticle> articles = _journalArticleService.getArticles(siteId, 0,
+        contextAcceptLanguage.getPreferredLocale());
 
-      appointment.setTitle("Title" + i);
-      appointment.setDate(new Date());
-
-      appointments.add(appointment);
+    for (JournalArticle article : articles) {
+      appointments.add(_toAppointment(article));
     }
 
     return Page.of(appointments);
@@ -57,6 +56,9 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 
     return appointment;
   }
+
+  @Reference
+  private JournalArticleService _journalArticleService;
 
   @Reference
   private AppointmentUtil _appointmentUtil;
