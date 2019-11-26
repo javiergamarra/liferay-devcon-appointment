@@ -12,6 +12,7 @@ import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import java.util.function.BiFunction;
 
@@ -42,19 +43,28 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointments(siteId: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {appointments(filter: ___, page: ___, pageSize: ___, search: ___, siteId: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public AppointmentPage appointments(
 			@GraphQLName("siteId") Long siteId,
-			@GraphQLName("siteKey") String siteKey)
+			@GraphQLName("siteKey") String siteKey,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
 			_appointmentResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			appointmentResource -> new AppointmentPage(
-				appointmentResource.getSiteAppointmentsPage(siteId)));
+				appointmentResource.getSiteAppointmentsPage(
+					siteId, search,
+					_filterBiFunction.apply(appointmentResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(appointmentResource, sortsString))));
 	}
 
 	/**
