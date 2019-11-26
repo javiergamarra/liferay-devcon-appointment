@@ -75,3 +75,26 @@ paths:
                 $ref: "#/components/schemas/Appointment"
           description: ""
       tags: ["Appointment"]
+  "/appointments/{appointmentId}":
+    get:
+      operationId: getAppointment
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            format: int64
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+          description: "Get appointment"
+      tags: ["Appointment"]
+
+
