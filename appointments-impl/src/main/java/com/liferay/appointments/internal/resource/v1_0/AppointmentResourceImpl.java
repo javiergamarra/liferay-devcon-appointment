@@ -5,10 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.internal.util.AppointmentUtil;
 import com.liferay.appointments.resource.v1_0.AppointmentResource;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.vulcan.pagination.Page;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -35,5 +38,27 @@ public class AppointmentResourceImpl extends BaseAppointmentResourceImpl {
 
     return Page.of(appointments);
   }
+
+  @Override
+  public Appointment postSiteAppointment(Long siteId, Appointment appointment) throws Exception {
+
+    JournalArticle journalArticle = _appointmentUtil.createJournalArticle(siteId, appointment.getTitle(),
+        appointment.getDate());
+
+    return _toAppointment(journalArticle);
+  }
+
+  private Appointment _toAppointment(JournalArticle journalArticle) throws Exception {
+    Appointment appointment = new Appointment();
+
+    appointment.setId(journalArticle.getResourcePrimKey());
+    appointment.setTitle(journalArticle.getTitle());
+    appointment.setDate(_appointmentUtil.getDateField(journalArticle));
+
+    return appointment;
+  }
+
+  @Reference
+  private AppointmentUtil _appointmentUtil;
 
 }

@@ -1,10 +1,14 @@
 package com.liferay.appointments.internal.graphql.mutation.v1_0;
 
+import com.liferay.appointments.dto.v1_0.Appointment;
+import com.liferay.appointments.resource.v1_0.AppointmentResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
+import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 
 import javax.annotation.Generated;
 
@@ -21,6 +25,28 @@ import org.osgi.service.component.ComponentServiceObjects;
  */
 @Generated("")
 public class Mutation {
+
+	public static void setAppointmentResourceComponentServiceObjects(
+		ComponentServiceObjects<AppointmentResource>
+			appointmentResourceComponentServiceObjects) {
+
+		_appointmentResourceComponentServiceObjects =
+			appointmentResourceComponentServiceObjects;
+	}
+
+	@GraphQLField
+	public Appointment createSiteAppointment(
+			@GraphQLName("siteId") Long siteId,
+			@GraphQLName("siteKey") String siteKey,
+			@GraphQLName("appointment") Appointment appointment)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_appointmentResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			appointmentResource -> appointmentResource.postSiteAppointment(
+				siteId, appointment));
+	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R
 			_applyComponentServiceObjects(
@@ -59,6 +85,21 @@ public class Mutation {
 			componentServiceObjects.ungetService(resource);
 		}
 	}
+
+	private void _populateResourceContext(
+			AppointmentResource appointmentResource)
+		throws Exception {
+
+		appointmentResource.setContextAcceptLanguage(_acceptLanguage);
+		appointmentResource.setContextCompany(_company);
+		appointmentResource.setContextHttpServletRequest(_httpServletRequest);
+		appointmentResource.setContextHttpServletResponse(_httpServletResponse);
+		appointmentResource.setContextUriInfo(_uriInfo);
+		appointmentResource.setContextUser(_user);
+	}
+
+	private static ComponentServiceObjects<AppointmentResource>
+		_appointmentResourceComponentServiceObjects;
 
 	private AcceptLanguage _acceptLanguage;
 	private Company _company;
