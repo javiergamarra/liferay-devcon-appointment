@@ -22,7 +22,14 @@ export const appointments = (filter = '', siteKey = SITE_KEY) =>
 // eslint-disable-next-line no-unused-vars
 export const appointment = appointmentId =>
     request(gql`   
-        //FILLME!
+        query {
+   appointment(appointmentId: ${appointmentId}){
+       id
+       date
+       title
+   }
+}
+
     `);
 
 // eslint-disable-next-line no-unused-vars
