@@ -89,7 +89,7 @@
             // eslint-disable-next-line no-unused-vars
             filterByDate: function(event) {
                 this.loadAppointments(
-                    //FILLME !
+                    `date gt ${event.target.value}`
                     );
             },
         },
