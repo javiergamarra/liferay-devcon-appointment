@@ -28,7 +28,15 @@ export const appointment = appointmentId =>
 // eslint-disable-next-line no-unused-vars
 export const createAppointment = (title, date, siteKey = SITE_KEY) =>
     request(gql`   
-        //FILLME!
+        mutation {
+   createSiteAppointment(appointment: 
+{ date: ${date}, title: ${title}}, siteKey: ${siteKey}) {
+       date
+       id
+       title
+   }
+}
+
     `);
 
 // eslint-disable-next-line no-unused-vars
