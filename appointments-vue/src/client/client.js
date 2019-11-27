@@ -5,7 +5,18 @@ const SITE_KEY = 'Guest';
 // eslint-disable-next-line no-unused-vars
 export const appointments = (filter = '', siteKey = SITE_KEY) =>
     request(gql`   
-        //FILLME!
+        query {
+   appointments(siteKey: ${siteKey}){
+       items {
+           id
+           date
+           title
+       }
+       page
+       pageSize
+       totalCount
+   }
+}
     `);
 
 // eslint-disable-next-line no-unused-vars
