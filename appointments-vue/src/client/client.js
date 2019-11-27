@@ -49,7 +49,10 @@ export const createAppointment = (title, date, siteKey = SITE_KEY) =>
 // eslint-disable-next-line no-unused-vars
 export const deleteAppointment = appointmentId =>
     request(gql`   
-        //FILLME!
+        mutation {
+   deleteAppointment(appointmentId: ${appointmentId})
+}
+
     `);
 
 // eslint-disable-next-line no-unused-vars
