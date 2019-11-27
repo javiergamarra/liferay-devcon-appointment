@@ -55,7 +55,15 @@ export const deleteAppointment = appointmentId =>
 // eslint-disable-next-line no-unused-vars
 export const updateAppointment = (appointmentId, title, date) =>
     request(gql`   
-        //FIXME!
+        mutation {
+   updateAppointment(appointment: 
+{ date: ${date}, title: ${title}}, appointmentId: ${appointmentId}) {
+       date
+       id
+       title
+   }
+}
+
     `);
 
 function request(query) {
