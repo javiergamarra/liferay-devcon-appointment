@@ -83,7 +83,7 @@
             // eslint-disable-next-line no-unused-vars
             filterByTitle: function (event) {
                 this.loadAppointments(
-                    //FILLME !
+                    `contains(title, '${event.target.value}')`
                 );
             },
             // eslint-disable-next-line no-unused-vars

@@ -6,7 +6,7 @@ const SITE_KEY = 'Guest';
 export const appointments = (filter = '', siteKey = SITE_KEY) =>
     request(gql`   
         query {
-   appointments(siteKey: ${siteKey}){
+   appointments(siteKey: ${siteKey}, filter: ${filter}){
        items {
            id
            date
