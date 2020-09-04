@@ -10,7 +10,7 @@
   "dependencies": {
     "@clayui/css": "^3.2.0",
     "core-js": "^3.3.2",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.13.1",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3"
   },
